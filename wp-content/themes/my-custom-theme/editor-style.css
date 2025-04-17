@@ -1,0 +1,16 @@
+/* Make rows and columns visible while editing */
+.wp-block[data-type="acf/container"] {
+  border:1px solid #f0f0f0;
+  padding: 10px;
+  
+}
+
+.wp-block[data-type="acf/row"] {
+  border:1px solid #f0f0f0;
+  padding: 10px;
+}
+
+.wp-block[data-type="acf/column"] {
+  border:1px solid #f0f0f0;
+  padding: 10px;
+}
