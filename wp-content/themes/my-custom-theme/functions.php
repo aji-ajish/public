@@ -25,13 +25,13 @@ add_action('wp_enqueue_scripts', function () {
 });
 
 // Enqueue editor styles
-function load_editor_styles()
-{
-    // Bootstrap CSS (Editor)
-    wp_enqueue_style('bootstrap-editor', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', false, null);
-    wp_enqueue_style('editor-custom-style', get_template_directory_uri() . '/editor-style.css', [], '1.0');
-}
-add_action('enqueue_block_editor_assets', 'load_editor_styles');
+// function load_editor_styles()
+// {
+//     // Bootstrap CSS (Editor)
+//     wp_enqueue_style('bootstrap-editor', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', false, null);
+//     wp_enqueue_style('editor-custom-style', get_template_directory_uri() . '/editor-style.css', [], '1.0');
+// }
+// add_action('enqueue_block_editor_assets', 'load_editor_styles');
 
 // Register custom ACF block category
 add_filter('block_categories', function ($categories) {
