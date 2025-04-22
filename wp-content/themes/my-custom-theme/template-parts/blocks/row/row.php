@@ -1,3 +1,4 @@
 <div class="row">
-  <?php echo '<InnerBlocks />'; ?>
+    <InnerBlocks 
+    />
 </div>

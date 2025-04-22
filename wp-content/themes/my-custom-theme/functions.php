@@ -46,9 +46,35 @@ add_filter('block_categories', function ($categories) {
     );
 });
 
+function enqueue_editor_scripts() {
+    wp_enqueue_script('jquery');
+}
+add_action('enqueue_block_editor_assets', 'enqueue_editor_scripts');
+
+function my_custom_theme_enqueue_assets() {
+    // Enqueue WordPress block editor scripts and styles
+    wp_enqueue_script(
+        'my-custom-column-block-js',
+        get_template_directory_uri() . '/template-parts/blocks/column/column.js',
+        array( 'wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-data', 'wp-i18n', 'wp-components' ),
+        null,
+        true
+    );
+
+    // Enqueue the necessary CSS if any
+    wp_enqueue_style(
+        'my-custom-column-block-css',
+        get_template_directory_uri() . '/template-parts/blocks/column/column.css'
+    );
+}
+add_action( 'enqueue_block_editor_assets', 'my_custom_theme_enqueue_assets' );
+
+
+
 // Register ACF Container block
 add_action('acf/init', function () {
     if (function_exists('acf_register_block_type')) {
+        // Container
         acf_register_block_type([
             'name' => 'container',
             'title' => 'Container',
@@ -57,12 +83,13 @@ add_action('acf/init', function () {
             'category' => 'custom-blocks',
             'icon' => 'screenoptions',
             'supports' => [
-                'jsx' => true, // Enables live editor preview
+                'jsx' => true,
                 'align' => true,
                 'mode' => false,
             ],
         ]);
 
+        // Row
         acf_register_block_type([
             'name' => 'row',
             'title' => 'Row',
@@ -70,6 +97,7 @@ add_action('acf/init', function () {
             'render_template' => 'template-parts/blocks/row/row.php',
             'category' => 'custom-blocks',
             'icon' => 'columns',
+            'mode' => 'preview',
             'supports' => [
                 'jsx' => true,
                 'align' => false,
@@ -78,24 +106,33 @@ add_action('acf/init', function () {
         ]);
 
 
-
-        // Register Column block
         acf_register_block_type([
             'name' => 'column',
             'title' => 'Column',
-            'description' => 'Bootstrap Column block',
+            'description' => 'Dynamic Bootstrap Columns',
             'render_template' => 'template-parts/blocks/column/column.php',
             'category' => 'custom-blocks',
-            'icon' => 'align-pull-left',
+            'icon' => 'columns',
+            'mode' => 'preview',
             'supports' => [
                 'jsx' => true,
                 'align' => false,
                 'mode' => false,
             ],
-            'parent' => ['acf/row'], // ✅ Only inside Row
         ]);
+        
     }
 });
+function enqueue_column_block_scripts() {
+    wp_enqueue_script(
+        'column-block-editor',
+        get_template_directory_uri() . '/template-parts/blocks/column/column.js',
+        ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data'],
+        filemtime(get_template_directory() . '/template-parts/blocks/column/column.js'),
+        true
+    );
+}
+add_action('enqueue_block_editor_assets', 'enqueue_column_block_scripts');
 
 // Add Bootstrap classes dynamically to the container block's wrapper
 add_filter('acf/blocks/render_block_wrapper_attributes', function ($wrapper_attributes, $block) {

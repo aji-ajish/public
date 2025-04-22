@@ -1,0 +1,47 @@
+.column-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+  }
+  
+  .column-popup h3 {
+    margin-top: 0;
+  }
+  
+  .breakpoint-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  
+  .breakpoint-row select,
+  .breakpoint-row input {
+    flex: 1;
+  }
+  
+  .breakpoint-row .remove {
+    background: red;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  
+  .popup-actions {
+    margin-top: 15px;
+    text-align: right;
+  }
+  
+  .popup-actions button {
+    margin-left: 10px;
+  }
+  

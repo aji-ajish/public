@@ -1,0 +1,20 @@
+{
+  "name": "acf/column",
+  "title": "Column",
+  "description": "Dynamic Bootstrap columns",
+  "category": "custom-blocks",
+  "icon": "columns",
+  "keywords": ["bootstrap", "column", "responsive"],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "template-parts/blocks/column/column.php"
+  },
+  "supports": {
+    "jsx": true,
+    "align": false,
+    "mode": false,
+    "multiple": true
+  },
+  "editorScript": "file:./column.js",
+  "editorStyle": "file:./column.css"
+}
