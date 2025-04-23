@@ -72,21 +72,33 @@
     const container = popup.querySelector("#column-settings");
     const customInput = popup.querySelector("#custom-class");
 
-    // Parse classes if any exist
+    // Parse existing classes
     const existing = existingClassNames ? existingClassNames.split(/\s+/) : [];
     const parsed = existing
       .map((cls) => {
-        const match = cls.match(/^col-(xs|sm|md|lg|xl|xxl)-(\d{1,2})$/);
-        return match ? { bp: match[1], count: 12 / parseInt(match[2]) } : null;
+        let match = cls.match(/^col-(xs|sm|md|lg|xl|xxl)-(\d{1,2})$/);
+        if (match) return { bp: match[1], count: parseInt(match[2]), type: "fixed" };
+
+        match = cls.match(/^col-(xs|sm|md|lg|xl|xxl)-auto$/);
+        if (match) return { bp: match[1], count: 0, type: "auto-width" };
+
+        match = cls.match(/^col-(xs|sm|md|lg|xl|xxl)$/);
+        if (match) return { bp: match[1], count: 0, type: "auto" };
+
+        if (cls === "col") return { bp: "xs", count: 0, type: "auto" };
+
+        return null;
       })
       .filter(Boolean);
 
-    const extraClass = existing
-      .filter((cls) => !/^col-(xs|sm|md|lg|xl|xxl)-\d{1,2}$/.test(cls))
-      .join(" ");
+    const extraClass = existing.filter(
+      (cls) => !/^col(-[a-z]+)?(-\d+)?$/.test(cls)
+    ).join(" ");
 
     if (parsed.length) {
-      parsed.forEach(({ bp, count }) => addBreakpointRow(container, bp, count));
+      parsed.forEach(({ bp, count, type }) => {
+        addBreakpointRow(container, bp, type, count || 6);
+      });
     } else {
       addBreakpointRow(container);
     }
@@ -103,9 +115,16 @@
 
       rows.forEach((row) => {
         const bp = row.querySelector(".breakpoint").value;
-        const count = parseInt(row.querySelector(".count").value);
-        if (bp && count && count <= 12) {
-          classParts.push(`col-${bp}-${Math.floor(12 / count)}`);
+        const type = row.querySelector(".type").value;
+        if (type === "auto") {
+          classParts.push(bp === "xs" ? "col" : `col-${bp}`);
+        } else if (type === "auto-width") {
+          classParts.push(`col-${bp}-auto`);
+        } else {
+          const count = parseInt(row.querySelector(".count").value);
+          if (bp && count && count <= 12) {
+            classParts.push(`col-${bp}-${count}`);
+          }
         }
       });
 
@@ -123,11 +142,10 @@
       popup.remove();
     });
 
-    // Drag popup
     makeDraggable(popup.querySelector("#popup-inner"), popup.querySelector(".popup-header"));
   }
 
-  function addBreakpointRow(container, breakpoint = "sm", count = 2) {
+  function addBreakpointRow(container, breakpoint = "xs", type = "auto", count = 6) {
     const row = document.createElement("div");
     row.className = "breakpoint-row";
     row.style.marginBottom = "8px";
@@ -140,10 +158,29 @@
         <option value="xl">xl</option>
         <option value="xxl">xxl</option>
       </select>
-      <input type="number" class="count" min="1" max="12" value="${count}" style="width:60px; margin: 0 8px;" />
+      <select class="type" style="margin: 0 6px;">
+        <option value="auto">Auto</option>
+        <option value="fixed">Fixed</option>
+        <option value="auto-width">Grow</option>
+      </select>
+      <input type="number" class="count" min="1" max="12" value="${count}" style="width:60px; margin-right:8px; display:${type === "fixed" ? "inline-block" : "none"};" />
       <button class="remove">×</button>
     `;
+
+    const typeSelect = row.querySelector(".type");
+    const countInput = row.querySelector(".count");
+
     row.querySelector(".breakpoint").value = breakpoint;
+    typeSelect.value = type;
+
+    // Show/hide count input
+    const updateVisibility = () => {
+      countInput.style.display = typeSelect.value === "fixed" ? "inline-block" : "none";
+    };
+
+    typeSelect.addEventListener("change", updateVisibility);
+    updateVisibility();
+
     row.querySelector(".remove").addEventListener("click", () => row.remove());
     container.appendChild(row);
   }
@@ -162,7 +199,7 @@
       if (isDragging) {
         popup.style.left = e.clientX - offsetX + "px";
         popup.style.top = e.clientY - offsetY + "px";
-        popup.style.transform = "none"; // remove center transform
+        popup.style.transform = "none";
       }
     });
 
